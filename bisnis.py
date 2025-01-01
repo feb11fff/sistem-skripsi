@@ -12,6 +12,8 @@ import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.os_manager import ChromeType
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 
 @st.cache_resource
 def get_driver():
