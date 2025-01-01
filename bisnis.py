@@ -10,6 +10,17 @@ import matplotlib.pyplot as plt
 import warnings
 import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.os_manager import ChromeType
+
+@st.cache_resource
+def get_driver():
+    return webdriver.Chrome(
+        service=Service(
+            ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
+        ),
+        options=options,
+    )
 warnings.filterwarnings('ignore')
 
 st.set_page_config(
