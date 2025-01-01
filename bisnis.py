@@ -1,0 +1,487 @@
+from streamlit_option_menu import option_menu
+import joblib
+import streamlit as st
+import pandas as pd 
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import metrics
+import numpy as np
+import matplotlib.pyplot as plt
+import warnings
+import nltk
+from sklearn.feature_extraction.text import TfidfVectorizer
+warnings.filterwarnings('ignore')
+
+st.set_page_config(
+    page_title="Sentimen Analysis",
+    page_icon='https://lh5.googleusercontent.com/p/AF1QipNgmGyncJl5jkHg6gnxdTSTqOKtIBpy-kl9PgDz=w540-h312-n-k-no',
+    layout='centered',
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://www.extremelycoolapp.com/help',
+        'Report a bug': "https://www.extremelycoolapp.com/bug",
+        'About': "# This is a header. This is an *extremely* cool app!"
+    }
+)
+st.write("""
+<center><h2 style = "text-align: justify;">Analisi Sentimen Wisata Madura Dengan Maximum Entropy</h2></center>
+""",unsafe_allow_html=True)
+
+with st.container():
+    with st.sidebar:
+        selected = option_menu(
+        st.write("""<h3 style = "text-align: center;"></h3>""",unsafe_allow_html=True), 
+        ["Home", "Dataset","prediksi ulasan","Implementation"], 
+            icons=['house', 'bar-chart','check2-square', 'person'], menu_icon="cast", default_index=0,
+            styles={
+                "container": {"padding": "0!important", "background-color": "#412a7a"},
+                "icon": {"color": "white", "font-size": "18px"}, 
+                "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "color":"white"},
+                "nav-link-selected":{"background-color": "#412a7a"}
+            }
+        )
+    if selected == "Home" :
+        st.write("""<h3 style="text-align: center;">
+        <img src="https://lh5.googleusercontent.com/p/AF1QipNgmGyncJl5jkHg6gnxdTSTqOKtIBpy-kl9PgDz=w540-h312-n-k-no" width="500" height="300">
+        </h3>""", unsafe_allow_html=True)
+    if selected == "Dataset":
+        st.write("Data Sebelum Preprocessing")
+        file_path = 'data stopword tes.csv'  # Ganti dengan path ke file Anda
+        data = pd.read_csv(file_path)
+        st.write(data['Ulasan'].head(10))
+        st.write("Data Setelah Preprocessing")
+        file_path2 = 'data preprocessing.csv'  # Ganti dengan path ke file Anda
+        data2 = pd.read_csv(file_path2)
+        st.write(data2['Ulasan'].head(10))
+    if selected == "prediksi ulasan":
+        import joblib
+        # Menggunakan pandas untuk membaca file CSV
+        file_path = 'data stopword tes.csv'  # Ganti dengan path ke file Anda
+        data = pd.read_csv(file_path)
+        vectorizer = TfidfVectorizer(max_features=100)
+        X = vectorizer.fit_transform(data['stopword']).toarray()
+        loaded_model = joblib.load('final_maxent_model.pkl')
+        loaded_vectorizer = joblib.load('tfidf (1).pkl')
+        with st.form("my_form"):
+            st.subheader("Implementasi")
+            ulasan = st.text_input('Masukkan ulasan')  # Input ulasan dari pengguna
+            submit = st.form_submit_button("Prediksi")
+            if submit:
+                if ulasan.strip():  # Validasi input tidak kosong
+                    # Transformasikan ulasan ke bentuk vektor
+                    new_X = vectorizer.transform([ulasan]).toarray()
+        
+                    # Membuat dictionary dengan nama feature sesuai format model
+                    new_data_features = {f"feature_{j}": new_X[0][j] for j in range(new_X.shape[1])}
+                    
+                    # Prediksi menggunakan model
+                    new_pred = loaded_model.classify(new_data_features)
+        
+                    # Tampilkan hasil prediksi
+                    st.subheader('Hasil Prediksi')
+                    st.write(f"Prediction for New Data: {new_pred}")
+                else:
+                    st.error("Masukkan ulasan terlebih dahulu!")
+
+    if selected == "Implementation":
+        import joblib
+        # Menggunakan pandas untuk membaca file CSV
+        file_path = 'data stopword tes.csv'  # Ganti dengan path ke file Anda
+        data = pd.read_csv(file_path)
+        vectorizer = TfidfVectorizer(max_features=100)
+        X = vectorizer.fit_transform(data['stopword']).toarray()
+        loaded_model = joblib.load('final_maxent_model.pkl')
+        loaded_vectorizer = joblib.load('tfidf (1).pkl')
+
+
+    
+        st.subheader("Implementasi")
+            # Judul Aplikasi
+        st.title("pilih sentimen wisata")
+        
+        # Tambahkan tombol untuk load file CSV
+        if st.button("Bukit Jaddih"):
+            try:
+                from bs4 import BeautifulSoup
+                from selenium import webdriver
+                from selenium import webdriver
+                from selenium.webdriver.chrome.options import Options
+
+                # Konfigurasi opsi headless
+                options = Options()
+                options.add_argument("--headless")  # Mode headless
+                options.add_argument("--disable-gpu")  # Opsional untuk mempercepat performa
+                options.add_argument("--window-size=1920,1080")  # Opsional untuk menentukan resolusi layar
+
+                # Inisialisasi driver
+                driver = webdriver.Chrome(options=options)
+                # URL dari Google Search
+                url='https://www.google.com/maps/place/Jaddih+Hill+Madura/@-7.0822777,112.7569647,17z/data=!4m8!3m7!1s0x2dd8045eb0acb79d:0x4a24af02fd796f55!8m2!3d-7.082283!4d112.7595396!9m1!1b1!16s%2Fg%2F11c2r8kctr?entry=ttu&g_ep=EgoyMDI0MTIxMS4wIKXMDSoASAFQAw%3D%3D'
+                driver.get(url)
+                response = BeautifulSoup(driver.page_source, 'html.parser')
+                reviews = response.find_all('div', class_='w6VYqd')
+                def get_review_summary(result_set):
+                    review_texts = []  # List untuk menyimpan teks review
+
+                    for result in result_set:
+                        articles = result.find_all('div', class_='m6QErb XiKgde')
+                        for article in articles:
+                            all_divs = article.find_all('div', class_='MyEned')
+                            for div in all_divs:
+                                ext_data = div.find_all('span', class_='wiI7pd')  # Menemukan semua elemen <span> dengan kelas 'pan'
+                                ext_data = [span.get_text(strip=True) for span in ext_data]  # Mengambil teks dari setiap elemen <span> dan menghapus spasi
+
+                                # Iterasi melalui setiap teks di ext_data dan ambil kalimat pertama
+                                for text in ext_data:
+                                    first_sentence = text.split('.')[0]  # Mengambil kalimat pertama sebelum titik
+                                    review_texts.append(first_sentence)  # Simpan kalimat pertama ke dalam list
+
+                    return review_texts
+                review_texts=get_review_summary(reviews)
+            
+                    # Mengambil 10 data pertama dari kolom 'ulasan'
+                top_10_reviews = review_texts[-5:]
+                
+                # Transformasi data ulasan ke fitur
+                new_X = vectorizer.transform(top_10_reviews).toarray()
+                
+                # Membuat dictionary fitur (jika model membutuhkan format dictionary)
+                features_list = [
+                    {f"feature_{j}": new_X[i][j] for j in range(new_X.shape[1])} 
+                    for i in range(new_X.shape[0])
+                ]
+                
+                # Prediksi sentimen untuk setiap ulasan
+                predictions = [loaded_model.classify(features) for features in features_list]
+                
+                # Menampilkan hasil prediksi
+                st.subheader("Hasil Prediksi Sentimen")
+                hasil_prediksi = pd.DataFrame({
+                    "Ulasan": top_10_reviews,
+                    "Prediksi Sentimen": predictions
+                })
+                st.write(hasil_prediksi)
+                # Hitung mayoritas kelas
+                from collections import Counter
+                class_counts = Counter(predictions)
+                majority_class = class_counts.most_common(1)[0][0]  # Kelas dengan frekuensi tertinggi
+
+                st.write("Kelas mayoritas (kesimpulan):", majority_class)
+            except FileNotFoundError:
+                st.error("File tidak ditemukan. Pastikan path file benar.")
+            except Exception as e:
+                st.error(f"Terjadi kesalahan: {e}")
+            import time
+            time.sleep(5)
+            # Menutup driver
+            driver.quit()
+
+        if st.button("Pantai Slopeng"):
+            try:
+                from bs4 import BeautifulSoup
+                from selenium import webdriver
+                from selenium import webdriver
+                from selenium.webdriver.chrome.options import Options
+
+                # Konfigurasi opsi headless
+                options = Options()
+                options.add_argument("--headless")  # Mode headless
+                options.add_argument("--disable-gpu")  # Opsional untuk mempercepat performa
+                options.add_argument("--window-size=1920,1080")  # Opsional untuk menentukan resolusi layar
+
+                # Inisialisasi driver
+                driver = webdriver.Chrome(options=options)
+                # URL dari Google Search
+                url='https://www.google.com/maps/place/Pantai+Slopeng/@-6.886088,113.7820432,15z/data=!4m8!3m7!1s0x2dd9ea23fabac2df:0x8550176773c06614!8m2!3d-6.8861095!4d113.792343!9m1!1b1!16s%2Fg%2F112yfwt6c?entry=ttu&g_ep=EgoyMDI0MTIxMS4wIKXMDSoASAFQAw%3D%3D'
+                driver.get(url)
+                response = BeautifulSoup(driver.page_source, 'html.parser')
+                reviews = response.find_all('div', class_='w6VYqd')
+                def get_review_summary(result_set):
+                    review_texts = []  # List untuk menyimpan teks review
+
+                    for result in result_set:
+                        articles = result.find_all('div', class_='m6QErb XiKgde')
+                        for article in articles:
+                            all_divs = article.find_all('div', class_='MyEned')
+                            for div in all_divs:
+                                ext_data = div.find_all('span', class_='wiI7pd')  # Menemukan semua elemen <span> dengan kelas 'pan'
+                                ext_data = [span.get_text(strip=True) for span in ext_data]  # Mengambil teks dari setiap elemen <span> dan menghapus spasi
+
+                                # Iterasi melalui setiap teks di ext_data dan ambil kalimat pertama
+                                for text in ext_data:
+                                    first_sentence = text.split('.')[0]  # Mengambil kalimat pertama sebelum titik
+                                    review_texts.append(first_sentence)  # Simpan kalimat pertama ke dalam list
+
+                    return review_texts
+                review_texts=get_review_summary(reviews)
+            
+                    # Mengambil 10 data pertama dari kolom 'ulasan'
+                top_10_reviews = review_texts[-5:]
+                
+                # Transformasi data ulasan ke fitur
+                new_X = vectorizer.transform(top_10_reviews).toarray()
+                
+                # Membuat dictionary fitur (jika model membutuhkan format dictionary)
+                features_list = [
+                    {f"feature_{j}": new_X[i][j] for j in range(new_X.shape[1])} 
+                    for i in range(new_X.shape[0])
+                ]
+                
+                # Prediksi sentimen untuk setiap ulasan
+                predictions = [loaded_model.classify(features) for features in features_list]
+                
+                # Menampilkan hasil prediksi
+                st.subheader("Hasil Prediksi Sentimen")
+                hasil_prediksi = pd.DataFrame({
+                    "Ulasan": top_10_reviews,
+                    "Prediksi Sentimen": predictions
+                })
+                st.write(hasil_prediksi)
+                # Hitung mayoritas kelas
+                from collections import Counter
+                class_counts = Counter(predictions)
+                majority_class = class_counts.most_common(1)[0][0]  # Kelas dengan frekuensi tertinggi
+
+                st.write("Kelas mayoritas (kesimpulan):", majority_class)
+            except FileNotFoundError:
+                st.error("File tidak ditemukan. Pastikan path file benar.")
+            except Exception as e:
+                st.error(f"Terjadi kesalahan: {e}")
+            import time
+            time.sleep(5)
+            # Menutup driver
+            driver.quit()
+
+        if st.button("Pantai Sembilan"):
+            try:
+                from bs4 import BeautifulSoup
+                from selenium import webdriver
+                from selenium import webdriver
+                from selenium.webdriver.chrome.options import Options
+
+                # Konfigurasi opsi headless
+                options = Options()
+                options.add_argument("--headless")  # Mode headless
+                options.add_argument("--disable-gpu")  # Opsional untuk mempercepat performa
+                options.add_argument("--window-size=1920,1080")  # Opsional untuk menentukan resolusi layar
+
+                # Inisialisasi driver
+                driver = webdriver.Chrome(options=options)
+                # URL dari Google Search
+                url='https://www.google.com/maps/place/Sembilan+Beach/@-7.175165,113.919241,17z/data=!4m8!3m7!1s0x2dd759ba4659b12b:0x5818009169d7abb7!8m2!3d-7.1751703!4d113.9218159!9m1!1b1!16s%2Fg%2F11c5339dr4?entry=ttu&g_ep=EgoyMDI0MTIxMS4wIKXMDSoASAFQAw%3D%3D'
+                driver.get(url)
+                response = BeautifulSoup(driver.page_source, 'html.parser')
+                reviews = response.find_all('div', class_='w6VYqd')
+                def get_review_summary(result_set):
+                    review_texts = []  # List untuk menyimpan teks review
+
+                    for result in result_set:
+                        articles = result.find_all('div', class_='m6QErb XiKgde')
+                        for article in articles:
+                            all_divs = article.find_all('div', class_='MyEned')
+                            for div in all_divs:
+                                ext_data = div.find_all('span', class_='wiI7pd')  # Menemukan semua elemen <span> dengan kelas 'pan'
+                                ext_data = [span.get_text(strip=True) for span in ext_data]  # Mengambil teks dari setiap elemen <span> dan menghapus spasi
+
+                                # Iterasi melalui setiap teks di ext_data dan ambil kalimat pertama
+                                for text in ext_data:
+                                    first_sentence = text.split('.')[0]  # Mengambil kalimat pertama sebelum titik
+                                    review_texts.append(first_sentence)  # Simpan kalimat pertama ke dalam list
+
+                    return review_texts
+                review_texts=get_review_summary(reviews)
+            
+                    # Mengambil 10 data pertama dari kolom 'ulasan'
+                top_10_reviews = review_texts[-5:]
+                
+                # Transformasi data ulasan ke fitur
+                new_X = vectorizer.transform(top_10_reviews).toarray()
+                
+                # Membuat dictionary fitur (jika model membutuhkan format dictionary)
+                features_list = [
+                    {f"feature_{j}": new_X[i][j] for j in range(new_X.shape[1])} 
+                    for i in range(new_X.shape[0])
+                ]
+                
+                # Prediksi sentimen untuk setiap ulasan
+                predictions = [loaded_model.classify(features) for features in features_list]
+                
+                # Menampilkan hasil prediksi
+                st.subheader("Hasil Prediksi Sentimen")
+                hasil_prediksi = pd.DataFrame({
+                    "Ulasan": top_10_reviews,
+                    "Prediksi Sentimen": predictions
+                })
+                st.write(hasil_prediksi)
+                # Hitung mayoritas kelas
+                from collections import Counter
+                class_counts = Counter(predictions)
+                majority_class = class_counts.most_common(1)[0][0]  # Kelas dengan frekuensi tertinggi
+
+                st.write("Kelas mayoritas (kesimpulan):", majority_class)
+            except FileNotFoundError:
+                st.error("File tidak ditemukan. Pastikan path file benar.")
+            except Exception as e:
+                st.error(f"Terjadi kesalahan: {e}")
+            import time
+            time.sleep(5)
+            # Menutup driver
+            driver.quit()
+
+        if st.button("Air Terjun Toroan"):
+            try:
+                from bs4 import BeautifulSoup
+                from selenium import webdriver
+                from selenium import webdriver
+                from selenium.webdriver.chrome.options import Options
+
+                # Konfigurasi opsi headless
+                options = Options()
+                options.add_argument("--headless")  # Mode headless
+                options.add_argument("--disable-gpu")  # Opsional untuk mempercepat performa
+                options.add_argument("--window-size=1920,1080")  # Opsional untuk menentukan resolusi layar
+
+                # Inisialisasi driver
+                driver = webdriver.Chrome(options=options)
+                # URL dari Google Search
+                url='https://www.google.com/maps/place/Air+Terjun+Toroan/@-6.8928844,113.3097483,17z/data=!4m8!3m7!1s0x2e0518178cebfebb:0xefcf0aa128f79400!8m2!3d-6.8928897!4d113.3123232!9m1!1b1!16s%2Fg%2F11b6pkts1w?entry=ttu&g_ep=EgoyMDI0MTIxMS4wIKXMDSoASAFQAw%3D%3D'
+                driver.get(url)
+                response = BeautifulSoup(driver.page_source, 'html.parser')
+                reviews = response.find_all('div', class_='w6VYqd')
+                def get_review_summary(result_set):
+                    review_texts = []  # List untuk menyimpan teks review
+
+                    for result in result_set:
+                        articles = result.find_all('div', class_='m6QErb XiKgde')
+                        for article in articles:
+                            all_divs = article.find_all('div', class_='MyEned')
+                            for div in all_divs:
+                                ext_data = div.find_all('span', class_='wiI7pd')  # Menemukan semua elemen <span> dengan kelas 'pan'
+                                ext_data = [span.get_text(strip=True) for span in ext_data]  # Mengambil teks dari setiap elemen <span> dan menghapus spasi
+
+                                # Iterasi melalui setiap teks di ext_data dan ambil kalimat pertama
+                                for text in ext_data:
+                                    first_sentence = text.split('.')[0]  # Mengambil kalimat pertama sebelum titik
+                                    review_texts.append(first_sentence)  # Simpan kalimat pertama ke dalam list
+
+                    return review_texts
+                review_texts=get_review_summary(reviews)
+            
+                    # Mengambil 10 data pertama dari kolom 'ulasan'
+                top_10_reviews = review_texts[-5:]
+                
+                # Transformasi data ulasan ke fitur
+                new_X = vectorizer.transform(top_10_reviews).toarray()
+                
+                # Membuat dictionary fitur (jika model membutuhkan format dictionary)
+                features_list = [
+                    {f"feature_{j}": new_X[i][j] for j in range(new_X.shape[1])} 
+                    for i in range(new_X.shape[0])
+                ]
+                
+                # Prediksi sentimen untuk setiap ulasan
+                predictions = [loaded_model.classify(features) for features in features_list]
+                
+                # Menampilkan hasil prediksi
+                st.subheader("Hasil Prediksi Sentimen")
+                hasil_prediksi = pd.DataFrame({
+                    "Ulasan": top_10_reviews,
+                    "Prediksi Sentimen": predictions
+                })
+                st.write(hasil_prediksi)
+                # Hitung mayoritas kelas
+                from collections import Counter
+                class_counts = Counter(predictions)
+                majority_class = class_counts.most_common(1)[0][0]  # Kelas dengan frekuensi tertinggi
+
+                st.write("Kelas mayoritas (kesimpulan):", majority_class)
+            except FileNotFoundError:
+                st.error("File tidak ditemukan. Pastikan path file benar.")
+            except Exception as e:
+                st.error(f"Terjadi kesalahan: {e}")
+            import time
+            time.sleep(5)
+            # Menutup driver
+            driver.quit()
+
+        if st.button("Pantai Lombang "):
+            try:
+                from bs4 import BeautifulSoup
+                from selenium import webdriver
+                from selenium import webdriver
+                from selenium.webdriver.chrome.options import Options
+
+                # Konfigurasi opsi headless
+                options = Options()
+                options.add_argument("--headless")  # Mode headless
+                options.add_argument("--disable-gpu")  # Opsional untuk mempercepat performa
+                options.add_argument("--window-size=1920,1080")  # Opsional untuk menentukan resolusi layar
+
+                # Inisialisasi driver
+                driver = webdriver.Chrome(options=options)
+                # URL dari Google Search
+                url='https://www.google.com/maps/place/Pantai+Lombang/@-6.9178542,114.0599177,16z/data=!4m8!3m7!1s0x2dd9f7276ab8c685:0xe6566e3638889a6!8m2!3d-6.9155738!4d114.0586496!9m1!1b1!16s%2Fg%2F112yfp277?entry=ttu&g_ep=EgoyMDI0MTIxMS4wIKXMDSoASAFQAw%3D%3D'
+                driver.get(url)
+                response = BeautifulSoup(driver.page_source, 'html.parser')
+                reviews = response.find_all('div', class_='w6VYqd')
+                def get_review_summary(result_set):
+                    review_texts = []  # List untuk menyimpan teks review
+
+                    for result in result_set:
+                        articles = result.find_all('div', class_='m6QErb XiKgde')
+                        for article in articles:
+                            all_divs = article.find_all('div', class_='MyEned')
+                            for div in all_divs:
+                                ext_data = div.find_all('span', class_='wiI7pd')  # Menemukan semua elemen <span> dengan kelas 'pan'
+                                ext_data = [span.get_text(strip=True) for span in ext_data]  # Mengambil teks dari setiap elemen <span> dan menghapus spasi
+
+                                # Iterasi melalui setiap teks di ext_data dan ambil kalimat pertama
+                                for text in ext_data:
+                                    first_sentence = text.split('.')[0]  # Mengambil kalimat pertama sebelum titik
+                                    review_texts.append(first_sentence)  # Simpan kalimat pertama ke dalam list
+
+                    return review_texts
+                review_texts=get_review_summary(reviews)
+            
+                    # Mengambil 10 data pertama dari kolom 'ulasan'
+                top_10_reviews = review_texts[-5:]
+                
+                # Transformasi data ulasan ke fitur
+                new_X = vectorizer.transform(top_10_reviews).toarray()
+                
+                # Membuat dictionary fitur (jika model membutuhkan format dictionary)
+                features_list = [
+                    {f"feature_{j}": new_X[i][j] for j in range(new_X.shape[1])} 
+                    for i in range(new_X.shape[0])
+                ]
+                
+                # Prediksi sentimen untuk setiap ulasan
+                predictions = [loaded_model.classify(features) for features in features_list]
+                
+                # Menampilkan hasil prediksi
+                st.subheader("Hasil Prediksi Sentimen")
+                hasil_prediksi = pd.DataFrame({
+                    "Ulasan": top_10_reviews,
+                    "Prediksi Sentimen": predictions
+                })
+                st.write(hasil_prediksi)
+                # Hitung mayoritas kelas
+                from collections import Counter
+                class_counts = Counter(predictions)
+                majority_class = class_counts.most_common(1)[0][0]  # Kelas dengan frekuensi tertinggi
+
+                st.write("Kelas mayoritas (kesimpulan):", majority_class)
+            except FileNotFoundError:
+                st.error("File tidak ditemukan. Pastikan path file benar.")
+            except Exception as e:
+                st.error(f"Terjadi kesalahan: {e}")
+            import time
+            time.sleep(5)
+            # Menutup driver
+            driver.quit()
+
+        
+          
+
+
+        
