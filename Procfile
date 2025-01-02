@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit run .streamlit/bisnis.py
+web: sh setup.sh && streamlit run bisnis.py
