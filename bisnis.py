@@ -2,9 +2,6 @@ from streamlit_option_menu import option_menu
 import joblib
 import streamlit as st
 import pandas as pd 
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn import metrics
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
