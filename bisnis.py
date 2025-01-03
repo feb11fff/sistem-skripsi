@@ -109,7 +109,7 @@ with st.container():
         url = "https://colab.research.google.com/drive/1im2fPYWSGElnmKdOR8ysApZsiG_jOlRR?usp=sharing"
         st.write("Code implementasi scrapping dengan selenium [link](%s)" % url)
         url2 = "https://github.com/feb11fff/sistem-skripsi/tree/main"
-        st.write("Code implementasi scrapping dengan selenium [link](%s)" % url)
+        st.write("source code implemnatasi streamlit pada github [link](%s)" % url2)
         st.title("pilih sentimen wisata")
         
       
