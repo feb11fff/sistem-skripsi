@@ -105,11 +105,13 @@ with st.container():
 
 
     
-        st.subheader("Implementasi")
+        st.subheader("Implementasi Menggunakan Data Baru")
+        url = "https://www.streamlit.io"
+        st.write("check out this [link](%s)" % url)
             # Judul Aplikasi
         st.title("pilih sentimen wisata")
         
-        # Tambahkan tombol untuk load file CSV
+      
         if st.button("Bukit Jaddih"):
             try:
                 import requests
