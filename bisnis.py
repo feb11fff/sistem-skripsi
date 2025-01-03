@@ -108,7 +108,8 @@ with st.container():
         st.subheader("Implementasi Menggunakan Data Baru")
         url = "https://colab.research.google.com/drive/1im2fPYWSGElnmKdOR8ysApZsiG_jOlRR?usp=sharing"
         st.write("Code implementasi scrapping dengan selenium [link](%s)" % url)
-            # Judul Aplikasi
+        url2 = "https://github.com/feb11fff/sistem-skripsi/tree/main"
+        st.write("Code implementasi scrapping dengan selenium [link](%s)" % url)
         st.title("pilih sentimen wisata")
         
       
